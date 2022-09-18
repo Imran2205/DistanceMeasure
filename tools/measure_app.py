@@ -3,6 +3,7 @@ import sys
 import _init_paths
 from PyQt6.QtWidgets import QMainWindow, QApplication
 from PyQt6 import QtCore
+from PyQt6.QtCore import Qt
 import time
 from python_ui.distance_measure_app_ui import Ui_MainWindow as MeasureAppUI
 
@@ -11,6 +12,7 @@ class MeasureApp(QMainWindow, MeasureAppUI):
     def __init__(self, parent=None):
         super(MeasureApp, self).__init__(parent)
         self.setupUi(self)
+        self.setFocusPolicy(Qt.FocusPolicy.StrongFocus)
         self.pushButton_start.clicked.connect(self.start_timer)
         self.pushButton_stop.clicked.connect(self.stop_timer)
         self.pushButton_stop.setEnabled(False)
@@ -18,6 +20,12 @@ class MeasureApp(QMainWindow, MeasureAppUI):
         self.milliseconds2 = 0
         self.play = 0
         self.tot_time = 0
+
+    def keyPressEvent(self, event):
+        if event.key() == Qt.Key.Key_Up and self.play==0:
+            self.start_timer()
+        elif event.key() == Qt.Key.Key_Down and self.play==1:
+            self.stop_timer()
 
     def start_timer(self):
         self.timer_thread = TimerThreadClass()
