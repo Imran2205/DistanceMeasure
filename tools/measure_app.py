@@ -54,8 +54,8 @@ class MeasureApp(QMainWindow, MeasureAppUI):
         self.play = 0
         self.tot_time = 0
         self.row_count_order_table = 0
-        self.create_table()
         self.data_dict = {}
+        self.create_table()
 
     def clear_data(self):
         self.timer_thread = None
@@ -63,7 +63,6 @@ class MeasureApp(QMainWindow, MeasureAppUI):
         self.play = 0
         self.tot_time = 0
         self.row_count_order_table = 0
-        self.create_table()
         self.data_dict = {}
         self.create_table()
         self.lcdNumber_time.setProperty("value", 0)
@@ -111,7 +110,6 @@ class MeasureApp(QMainWindow, MeasureAppUI):
         dist = self.lcdNumber_distance.value()
         if name and time_ms and temp and rel_h and pres and dist:
             self.tableWidget.setRowCount(self.row_count_order_table)
-            self.tableWidget.setColumnCount(6)
             row = self.row_count_order_table - 1
             self.tableWidget.setItem(row, 0, QtWidgets.QTableWidgetItem(name))
             self.tableWidget.setItem(row, 1, QtWidgets.QTableWidgetItem(str(time_ms)))
@@ -196,6 +194,11 @@ class MeasureApp(QMainWindow, MeasureAppUI):
         self.pushButton_start.setEnabled(False)
         self.pushButton_stop.setEnabled(True)
         self.lcdNumber_distance.setProperty("value", 0)
+        self.lineEdit_name.setEnabled(False)
+        self.tableWidget.setEnabled(False)
+        self.doubleSpinBox_temp.setEnabled(False)
+        self.spinBox_humidity.setEnabled(False)
+        self.spinBox_pressure.setEnabled(False)
 
     def stop_timer(self):
         self.timer_thread.terminate()
@@ -203,6 +206,11 @@ class MeasureApp(QMainWindow, MeasureAppUI):
         self.play = 0
         self.pushButton_start.setEnabled(True)
         self.pushButton_stop.setEnabled(False)
+        self.lineEdit_name.setEnabled(True)
+        self.tableWidget.setEnabled(True)
+        self.doubleSpinBox_temp.setEnabled(True)
+        self.spinBox_humidity.setEnabled(True)
+        self.spinBox_pressure.setEnabled(True)
 
     def run_time(self, t):
         if self.play == 1:
