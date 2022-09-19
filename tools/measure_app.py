@@ -1,11 +1,12 @@
 import sys
 import _init_paths
 from PyQt6.QtWidgets import QMainWindow, QApplication
-from PyQt6 import QtCore
+from PyQt6 import QtCore, QtWidgets
 from PyQt6.QtCore import Qt
 import time
 from python_ui.distance_measure_app_ui import Ui_MainWindow as MeasureAppUI
 from utils.req_functions import distance_calculator
+from datetime import datetime
 
 
 class MeasureApp(QMainWindow, MeasureAppUI):
@@ -18,10 +19,56 @@ class MeasureApp(QMainWindow, MeasureAppUI):
         self.pushButton_stop.clicked.connect(self.stop_timer)
         self.pushButton_measure.clicked.connect(self.measure_dist)
         self.pushButton_stop.setEnabled(False)
+        self.pushButton_save.clicked.connect(self.add_row_to_table)
         self.timer_thread = None
         self.milliseconds2 = 0
         self.play = 0
         self.tot_time = 0
+        self.row_count_order_table = 0
+        self.create_table()
+        self.data_dict = {}
+
+    def add_row_to_table(self):
+        name = self.lineEdit_name.text()
+        time_ms = self.lcdNumber_time.value()
+        temp = self.doubleSpinBox_temp.value()
+        rel_h = self.spinBox_humidity.value()
+        pres = self.spinBox_pressure.value()
+        dist = self.lcdNumber_distance.value()
+        if name and time_ms and temp and rel_h and pres and dist:
+            self.tableWidget.setRowCount(self.row_count_order_table)
+            self.tableWidget.setColumnCount(6)
+            row = self.row_count_order_table - 1
+            self.tableWidget.setItem(row, 0, QtWidgets.QTableWidgetItem(name))
+            self.tableWidget.setItem(row, 1, QtWidgets.QTableWidgetItem(str(time_ms)))
+            self.tableWidget.setItem(row, 2, QtWidgets.QTableWidgetItem(str(temp)))
+            self.tableWidget.setItem(row, 3, QtWidgets.QTableWidgetItem(str(rel_h)))
+            self.tableWidget.setItem(row, 4, QtWidgets.QTableWidgetItem(str(pres)))
+            self.tableWidget.setItem(row, 5, QtWidgets.QTableWidgetItem(str(dist)))
+            self.row_count_order_table = self.row_count_order_table + 1
+            self.data_dict[name] = {
+                'Name': name,
+                'Time(ms)': time_ms,
+                'Temperature(C)': temp,
+                'Relative Humidity(%)': rel_h,
+                'Pressure(pascal)': pres,
+                'Distance(m)': dist
+            }
+
+    def create_table(self):
+        self.tableWidget.clear()
+        self.row_count_order_table = 1
+        self.tableWidget.setRowCount(self.row_count_order_table)
+        self.tableWidget.setColumnCount(6)
+        row = self.row_count_order_table - 1
+        self.tableWidget.setItem(row, 0, QtWidgets.QTableWidgetItem("Name"))
+        self.tableWidget.setItem(row, 1, QtWidgets.QTableWidgetItem("Time(ms)"))
+        self.tableWidget.setItem(row, 2, QtWidgets.QTableWidgetItem("Temperature(C)"))
+        self.tableWidget.setItem(row, 3, QtWidgets.QTableWidgetItem("Relative Humidity(%)"))
+        self.tableWidget.setItem(row, 4, QtWidgets.QTableWidgetItem("Pressure(pascal)"))
+        self.tableWidget.setItem(row, 5, QtWidgets.QTableWidgetItem("Distance(m)"))
+        self.row_count_order_table = self.row_count_order_table + 1
+        # self.tableWidget_order_table.move(0, 0)
 
     def measure_dist(self):
         req_time = self.lcdNumber_time.value()
@@ -46,6 +93,8 @@ class MeasureApp(QMainWindow, MeasureAppUI):
             self.measure_dist()
 
     def start_timer(self):
+        date_time_str = datetime.now().strftime("%Y_%m_%d-%I:%M:%S_%p")
+        self.lineEdit_name.setText(f"event_{date_time_str}")
         self.timer_thread = TimerThreadClass()
         self.timer_thread.timer_signal.connect(self.run_time)
         self.milliseconds2 = int(round(time.time() * 1000))
