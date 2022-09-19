@@ -156,7 +156,7 @@ class MeasureApp(QMainWindow, MeasureAppUI):
             rh_perc=rh,
             t_ms=req_time
         )
-        self.lcdNumber_distance.setProperty("value", round(distance))
+        self.lcdNumber_distance.setProperty("value", distance)
 
     def keyPressEvent(self, event):
         if event.key() == Qt.Key.Key_Up and self.play == 0:
