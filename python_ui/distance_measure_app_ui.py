@@ -139,10 +139,16 @@ class Ui_MainWindow(object):
         self.menubar = QtWidgets.QMenuBar(MainWindow)
         self.menubar.setGeometry(QtCore.QRect(0, 0, 800, 21))
         self.menubar.setObjectName("menubar")
+        self.menuMenu = QtWidgets.QMenu(self.menubar)
+        self.menuMenu.setObjectName("menuMenu")
         MainWindow.setMenuBar(self.menubar)
         self.statusbar = QtWidgets.QStatusBar(MainWindow)
         self.statusbar.setObjectName("statusbar")
         MainWindow.setStatusBar(self.statusbar)
+        self.actionClear_Data = QtGui.QAction(MainWindow)
+        self.actionClear_Data.setObjectName("actionClear_Data")
+        self.menuMenu.addAction(self.actionClear_Data)
+        self.menubar.addAction(self.menuMenu.menuAction())
 
         self.retranslateUi(MainWindow)
         QtCore.QMetaObject.connectSlotsByName(MainWindow)
@@ -165,6 +171,8 @@ class Ui_MainWindow(object):
         self.label_10.setText(_translate("MainWindow", "Pressure"))
         self.pushButton_save.setText(_translate("MainWindow", "Save"))
         self.pushButton_export_data.setText(_translate("MainWindow", "Export Data to CSV"))
+        self.menuMenu.setTitle(_translate("MainWindow", "Menu"))
+        self.actionClear_Data.setText(_translate("MainWindow", "Clear Data"))
 
 
 if __name__ == "__main__":

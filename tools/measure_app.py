@@ -1,5 +1,5 @@
 import sys
-import _init_paths
+# import _init_paths
 from PyQt6.QtWidgets import QMainWindow, QApplication, QMessageBox, QFileDialog, QWidget
 from PyQt6 import QtCore, QtWidgets
 from PyQt6.QtCore import Qt
@@ -48,6 +48,7 @@ class MeasureApp(QMainWindow, MeasureAppUI):
         self.app_save_file = App()
         self.app_save_file.signal.connect(self.export_csv_file)
         self.pushButton_export_data.clicked.connect(self.save_csv)
+        self.actionClear_Data.triggered.connect(self.clear_data)
         self.timer_thread = None
         self.milliseconds2 = 0
         self.play = 0
@@ -55,6 +56,19 @@ class MeasureApp(QMainWindow, MeasureAppUI):
         self.row_count_order_table = 0
         self.create_table()
         self.data_dict = {}
+
+    def clear_data(self):
+        self.timer_thread = None
+        self.milliseconds2 = 0
+        self.play = 0
+        self.tot_time = 0
+        self.row_count_order_table = 0
+        self.create_table()
+        self.data_dict = {}
+        self.create_table()
+        self.lcdNumber_time.setProperty("value", 0)
+        self.lcdNumber_distance.setProperty("value", 0)
+        self.lineEdit_name.setText("")
 
     def save_csv(self):
         self.app_save_file.init_ui_save_file()
@@ -159,14 +173,17 @@ class MeasureApp(QMainWindow, MeasureAppUI):
         self.lcdNumber_distance.setProperty("value", distance)
 
     def keyPressEvent(self, event):
-        if event.key() == Qt.Key.Key_Up and self.play == 0:
+        # print(event.key())
+        if event.key() == Qt.Key.Key_Shift and self.play == 0:
             self.start_timer()
-        elif event.key() == Qt.Key.Key_Down and self.play == 1:
+        elif event.key() == Qt.Key.Key_Space and self.play == 1:
             self.stop_timer()
-        elif event.key() == Qt.Key.Key_Right and self.play == 0:
+        elif event.key() == Qt.Key.Key_Control and self.play == 0:
             self.measure_dist()
-        elif event.key() == Qt.Key.Key_Left and self.play == 0:
+        elif event.key() == Qt.Key.Key_S and self.play == 0:
             self.add_row_to_table()
+        elif event.key() == Qt.Key.Key_Delete:
+            self.clear_data()
 
     def start_timer(self):
         date_time_str = datetime.now().strftime("%Y_%m_%d-%I:%M:%S_%p")
