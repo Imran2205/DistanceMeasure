@@ -5,7 +5,7 @@ def air_density(p, t, rh):
     pv_sat = 611 * math.exp(17.27 * t / (t + 237.3))
     p_v = pv_sat * rh
     p_da = p - p_v
-    t_k = t + 273.15
+    t_k = t + 273.15  # - 273.15
     dens = (p_da / (287.058 * t_k)) + (p_v / (461.495 * t_k))
     return dens
 
@@ -24,9 +24,12 @@ def distance_calculator(pressure_pascal, temp_cel, rh_perc, t_ms):
         rh=rh_frac
     )
     distance = vel_of_sound * (t_ms / 1000)
-    return distance
+    distance = float("{:.1f}".format(distance))
+    return distance, vel_of_sound
 
 
 if __name__ == '__main__':
-    dist_ = distance_calculator(101325, 25, 0.70, 1500)
-    print(dist_)
+    dist_, v_s = distance_calculator(101325, 25, 60, 2040)
+    print(dist_, v_s)
+    dist_, v_s = distance_calculator(101325, 50, 100, 2040)
+    print(dist_, v_s)
