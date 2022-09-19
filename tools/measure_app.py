@@ -1,11 +1,11 @@
 import sys
-
 import _init_paths
 from PyQt6.QtWidgets import QMainWindow, QApplication
 from PyQt6 import QtCore
 from PyQt6.QtCore import Qt
 import time
 from python_ui.distance_measure_app_ui import Ui_MainWindow as MeasureAppUI
+from utils.req_functions import distance_calculator
 
 
 class MeasureApp(QMainWindow, MeasureAppUI):
@@ -13,20 +13,37 @@ class MeasureApp(QMainWindow, MeasureAppUI):
         super(MeasureApp, self).__init__(parent)
         self.setupUi(self)
         self.setFocusPolicy(Qt.FocusPolicy.StrongFocus)
+        self.setFixedSize(800, 600)
         self.pushButton_start.clicked.connect(self.start_timer)
         self.pushButton_stop.clicked.connect(self.stop_timer)
+        self.pushButton_measure.clicked.connect(self.measure_dist)
         self.pushButton_stop.setEnabled(False)
         self.timer_thread = None
         self.milliseconds2 = 0
         self.play = 0
         self.tot_time = 0
 
+    def measure_dist(self):
+        req_time = self.lcdNumber_time.value()
+        rh = self.spinBox_humidity.value()
+        temp = self.doubleSpinBox_temp.value()
+        pressure = self.spinBox_pressure.value()
+        distance = distance_calculator(
+            pressure_pascal=pressure,
+            temp_cel=temp,
+            rh_perc=rh,
+            t_ms=req_time
+        )
+        self.lcdNumber_distance.setProperty("value", round(distance))
+
     def keyPressEvent(self, event):
         print(event.text())
-        if event.key() == Qt.Key.Key_Up and self.play==0:
+        if event.key() == Qt.Key.Key_Up and self.play == 0:
             self.start_timer()
-        elif event.key() == Qt.Key.Key_Down and self.play==1:
+        elif event.key() == Qt.Key.Key_Down and self.play == 1:
             self.stop_timer()
+        elif event.key() == Qt.Key.Key_Return and self.play == 0:
+            self.measure_dist()
 
     def start_timer(self):
         self.timer_thread = TimerThreadClass()
@@ -36,6 +53,7 @@ class MeasureApp(QMainWindow, MeasureAppUI):
         self.play = 1
         self.pushButton_start.setEnabled(False)
         self.pushButton_stop.setEnabled(True)
+        self.lcdNumber_distance.setProperty("value", 0)
 
     def stop_timer(self):
         self.timer_thread.terminate()
