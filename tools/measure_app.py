@@ -39,7 +39,7 @@ class MeasureApp(QMainWindow, MeasureAppUI):
         super(MeasureApp, self).__init__(parent)
         self.setupUi(self)
         self.setFocusPolicy(Qt.FocusPolicy.StrongFocus)
-        self.setFixedSize(800, 600)
+        self.setFixedSize(850, 600)
         self.pushButton_start.clicked.connect(self.start_timer)
         self.pushButton_stop.clicked.connect(self.stop_timer)
         self.pushButton_measure.clicked.connect(self.measure_dist)
