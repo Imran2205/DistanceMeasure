@@ -22,6 +22,7 @@ class MeasureApp(QMainWindow, MeasureAppUI):
         self.tot_time = 0
 
     def keyPressEvent(self, event):
+        print(event.text())
         if event.key() == Qt.Key.Key_Up and self.play==0:
             self.start_timer()
         elif event.key() == Qt.Key.Key_Down and self.play==1:
