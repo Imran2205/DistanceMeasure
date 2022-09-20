@@ -102,38 +102,39 @@ class MeasureApp(QMainWindow, MeasureAppUI):
             pass
 
     def add_row_to_table(self):
-        name = self.lineEdit_name.text()
-        time_ms = self.lcdNumber_time.value()
-        temp = self.doubleSpinBox_temp.value()
-        rel_h = self.spinBox_humidity.value()
-        pres = self.spinBox_pressure.value()
-        dist = self.lcdNumber_distance.value()
-        if name and time_ms and temp and rel_h and pres and dist:
-            self.tableWidget.setRowCount(self.row_count_order_table)
-            row = self.row_count_order_table - 1
-            self.tableWidget.setItem(row, 0, QtWidgets.QTableWidgetItem(name))
-            self.tableWidget.setItem(row, 1, QtWidgets.QTableWidgetItem(str(time_ms)))
-            self.tableWidget.setItem(row, 2, QtWidgets.QTableWidgetItem(str(temp)))
-            self.tableWidget.setItem(row, 3, QtWidgets.QTableWidgetItem(str(rel_h)))
-            self.tableWidget.setItem(row, 4, QtWidgets.QTableWidgetItem(str(pres)))
-            self.tableWidget.setItem(row, 5, QtWidgets.QTableWidgetItem(str(dist)))
-            self.row_count_order_table = self.row_count_order_table + 1
-            self.data_dict[name] = {
-                'Name': name,
-                'Required Time(ms)': time_ms,
-                'Temperature(C)': temp,
-                'Relative Humidity(%)': rel_h,
-                'Pressure(pascal)': pres,
-                'Distance(m)': dist
-            }
-        else:
-            dlg = QMessageBox(self)
-            dlg.setWindowTitle("Warning!")
-            dlg.setText("There is no valid data to be saved...")
-            button = dlg.exec()
+        if self.play == 0:
+            name = self.lineEdit_name.text()
+            time_ms = self.lcdNumber_time.value()
+            temp = self.doubleSpinBox_temp.value()
+            rel_h = self.spinBox_humidity.value()
+            pres = self.spinBox_pressure.value()
+            dist = self.lcdNumber_distance.value()
+            if name and time_ms and temp and rel_h and pres and dist:
+                self.tableWidget.setRowCount(self.row_count_order_table)
+                row = self.row_count_order_table - 1
+                self.tableWidget.setItem(row, 0, QtWidgets.QTableWidgetItem(name))
+                self.tableWidget.setItem(row, 1, QtWidgets.QTableWidgetItem(str(time_ms)))
+                self.tableWidget.setItem(row, 2, QtWidgets.QTableWidgetItem(str(temp)))
+                self.tableWidget.setItem(row, 3, QtWidgets.QTableWidgetItem(str(rel_h)))
+                self.tableWidget.setItem(row, 4, QtWidgets.QTableWidgetItem(str(pres)))
+                self.tableWidget.setItem(row, 5, QtWidgets.QTableWidgetItem(str(dist)))
+                self.row_count_order_table = self.row_count_order_table + 1
+                self.data_dict[name] = {
+                    'Name': name,
+                    'Required Time(ms)': time_ms,
+                    'Temperature(C)': temp,
+                    'Relative Humidity(%)': rel_h,
+                    'Pressure(pascal)': pres,
+                    'Distance(m)': dist
+                }
+            else:
+                dlg = QMessageBox(self)
+                dlg.setWindowTitle("Warning!")
+                dlg.setText("There is no valid data to be saved...")
+                button = dlg.exec()
 
-            if button == QMessageBox.StandardButton.Ok:
-                pass
+                if button == QMessageBox.StandardButton.Ok:
+                    pass
 
     def create_table(self):
         self.tableWidget.clear()
@@ -158,23 +159,24 @@ class MeasureApp(QMainWindow, MeasureAppUI):
         # self.tableWidget_order_table.move(0, 0)
 
     def measure_dist(self):
-        req_time = self.lcdNumber_time.value()
-        rh = self.spinBox_humidity.value()
-        temp = self.doubleSpinBox_temp.value()
-        pressure = self.spinBox_pressure.value()
-        distance, _ = distance_calculator(
-            pressure_pascal=pressure,
-            temp_cel=temp,
-            rh_perc=rh,
-            t_ms=req_time
-        )
-        self.lcdNumber_distance.setProperty("value", distance)
+        if self.play == 0:
+            req_time = self.lcdNumber_time.value()
+            rh = self.spinBox_humidity.value()
+            temp = self.doubleSpinBox_temp.value()
+            pressure = self.spinBox_pressure.value()
+            distance, _ = distance_calculator(
+                pressure_pascal=pressure,
+                temp_cel=temp,
+                rh_perc=rh,
+                t_ms=req_time
+            )
+            self.lcdNumber_distance.setProperty("value", distance)
 
     def keyPressEvent(self, event):
         # print(event.key())
         if event.key() == Qt.Key.Key_Shift and self.play == 0:
             self.start_timer()
-        elif event.key() == Qt.Key.Key_Space and self.play == 1:
+        elif event.key() == Qt.Key.Key_Alt and self.play == 1:
             self.stop_timer()
         elif event.key() == Qt.Key.Key_Control and self.play == 0:
             self.measure_dist()
@@ -184,33 +186,35 @@ class MeasureApp(QMainWindow, MeasureAppUI):
             self.clear_data()
 
     def start_timer(self):
-        date_time_str = datetime.now().strftime("%Y_%m_%d-%I:%M:%S_%p")
-        self.lineEdit_name.setText(f"Event_{date_time_str}")
-        self.timer_thread = TimerThreadClass()
-        self.timer_thread.timer_signal.connect(self.run_time)
-        self.milliseconds2 = int(round(time.time() * 1000))
-        self.timer_thread.start()
-        self.play = 1
-        self.pushButton_start.setEnabled(False)
-        self.pushButton_stop.setEnabled(True)
-        self.lcdNumber_distance.setProperty("value", 0)
-        self.lineEdit_name.setEnabled(False)
-        self.tableWidget.setEnabled(False)
-        self.doubleSpinBox_temp.setEnabled(False)
-        self.spinBox_humidity.setEnabled(False)
-        self.spinBox_pressure.setEnabled(False)
+        if self.play == 0:
+            date_time_str = datetime.now().strftime("%Y_%m_%d-%I:%M:%S_%p")
+            self.lineEdit_name.setText(f"Event_{date_time_str}")
+            self.timer_thread = TimerThreadClass()
+            self.timer_thread.timer_signal.connect(self.run_time)
+            self.milliseconds2 = int(round(time.time() * 1000))
+            self.timer_thread.start()
+            self.play = 1
+            self.pushButton_start.setEnabled(False)
+            self.pushButton_stop.setEnabled(True)
+            self.lcdNumber_distance.setProperty("value", 0)
+            self.lineEdit_name.setEnabled(False)
+            self.tableWidget.setEnabled(False)
+            self.doubleSpinBox_temp.setEnabled(False)
+            self.spinBox_humidity.setEnabled(False)
+            self.spinBox_pressure.setEnabled(False)
 
     def stop_timer(self):
-        self.timer_thread.terminate()
-        self.timer_thread = None
-        self.play = 0
-        self.pushButton_start.setEnabled(True)
-        self.pushButton_stop.setEnabled(False)
-        self.lineEdit_name.setEnabled(True)
-        self.tableWidget.setEnabled(True)
-        self.doubleSpinBox_temp.setEnabled(True)
-        self.spinBox_humidity.setEnabled(True)
-        self.spinBox_pressure.setEnabled(True)
+        if self.play == 1:
+            self.timer_thread.terminate()
+            self.timer_thread = None
+            self.play = 0
+            self.pushButton_start.setEnabled(True)
+            self.pushButton_stop.setEnabled(False)
+            self.lineEdit_name.setEnabled(True)
+            self.tableWidget.setEnabled(True)
+            self.doubleSpinBox_temp.setEnabled(True)
+            self.spinBox_humidity.setEnabled(True)
+            self.spinBox_pressure.setEnabled(True)
 
     def run_time(self, t):
         if self.play == 1:
