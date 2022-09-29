@@ -15,12 +15,13 @@ from plot import Plotter
 if __name__ == "__main__":
 
     ################### SETTINGS ###################
-    plt_classes = [0,132,420,494] # Speech, Music, Explosion, Silence 
-    class_labels=True
+    plt_classes = [0,132,420,494] # Speech, Music, Explosion, Silence
+    # plt_classes = [420]
+    class_labels = True
     FORMAT = pyaudio.paFloat32
     CHANNELS = 1
     RATE = params.SAMPLE_RATE
-    WIN_SIZE_SEC = 0.975
+    WIN_SIZE_SEC = 0.075
     CHUNK = int(WIN_SIZE_SEC * RATE)
     RECORD_SECONDS = 60
 
@@ -29,8 +30,8 @@ if __name__ == "__main__":
 
     #################### MODEL #####################
     
-    model = YAMNet(weights='keras_yamnet/yamnet.h5')
-    yamnet_classes = class_names('keras_yamnet/yamnet_class_map.csv')
+    model = YAMNet(weights='C:/Users/admin/Desktop/desktop/gta/DistanceMeasure/core/blast_detection/keras_yamnet/yamnet.h5')
+    yamnet_classes = class_names('C:/Users/admin/Desktop/desktop/gta/DistanceMeasure/core/blast_detection/keras_yamnet/yamnet_class_map.csv')
 
     #################### STREAM ####################
     audio = pyaudio.PyAudio()
@@ -52,15 +53,24 @@ if __name__ == "__main__":
         plt_classes_lab = yamnet_classes if class_labels else None
         n_classes = len(yamnet_classes)
 
-    monitor = Plotter(n_classes=n_classes, FIG_SIZE=(12,6), msd_labels=plt_classes_lab)
+    monitor = Plotter(n_classes=n_classes, FIG_SIZE=(12, 6), msd_labels=plt_classes_lab)
 
     for i in range(0, int(RATE / CHUNK * RECORD_SECONDS)):
         # Waveform
         data = preprocess_input(np.fromstring(
             stream.read(CHUNK), dtype=np.float32), RATE)
-        prediction = model.predict(np.expand_dims(data,0))[0]
-
-        monitor(data.transpose(), np.expand_dims(prediction[plt_classes],-1))
+        curr_size = data.shape[0]
+        pad_data = data
+        if curr_size < 96:
+            pad_data = np.zeros((96, 64))
+            for j in range(46, 52, curr_size):
+                pad_data[j:j+curr_size, 0:64] = data
+        # pad_data = data
+        prediction = model.predict(np.expand_dims(pad_data, 0))
+        # print(prediction)
+        print(prediction[0][plt_classes])
+        monitor(pad_data.transpose(), np.expand_dims(prediction[0][plt_classes], -1))
+        print(i)
 
     print("finished recording")
 

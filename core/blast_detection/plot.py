@@ -5,7 +5,7 @@ class Plotter():
     def __init__(self, win_size=96, n_wins=10, n_bands=64, n_classes=50, msd_labels=None, FIG_SIZE=(8,8),blit=True):
         # initialize plots
 
-        self.blit=blit
+        self.blit = blit
         self.win_size = win_size
         self.n_wins = n_wins
         self.n_bands = n_bands
@@ -26,7 +26,7 @@ class Plotter():
         if msd_labels is not None:
             self.ax2.set_yticks(np.linspace(0, len(msd_labels), len(msd_labels), endpoint=False))
             self.ax2.set_yticklabels(msd_labels)
-            self.ax2.set_ylim(-0.5,len(msd_labels)-0.5)
+            self.ax2.set_ylim(-0.5, len(msd_labels)-0.5)
 
         self.fig.canvas.draw()
 
@@ -37,18 +37,18 @@ class Plotter():
 
         plt.show(block=False)
 
-    def __call__(self,new_spec_col=None,new_act_col=None):
+    def __call__(self, new_spec_col=None, new_act_col=None):
         
         if new_spec_col is None:
-            new_spec_col = np.random.rand(self.n_bands,self.win_size)
+            new_spec_col = np.random.rand(self.n_bands, self.win_size)
         if new_act_col is None:
-            new_act_col = np.random.rand(self.n_classes,1)
+            new_act_col = np.random.rand(self.n_classes, 1)
 
-        self.spec = np.delete(self.spec,[k for k in range(self.win_size)], 1)
-        self.act = np.delete(self.act,0, 1)
+        self.spec = np.delete(self.spec, [k for k in range(self.win_size)], 1)
+        self.act = np.delete(self.act, 0, 1)
 
-        self.spec = np.concatenate((self.spec,new_spec_col),axis=1)
-        self.act = np.concatenate((self.act,new_act_col),axis=1)
+        self.spec = np.concatenate((self.spec,new_spec_col), axis=1)
+        self.act = np.concatenate((self.act,new_act_col), axis=1)
 
         self.img1.set_data(self.spec)
         self.img1.autoscale()
