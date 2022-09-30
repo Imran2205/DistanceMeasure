@@ -27,7 +27,8 @@ options = {
         'includes': ['cx_Freeze'],
         'include_files': [
             'C:/Users/admin/AppData/Local/Programs/Python/Python38/DLLs/tk86t.dll',
-            'C:/Users/admin/AppData/Local/Programs/Python/Python38/DLLs/tcl86t.dll'
+            'C:/Users/admin/AppData/Local/Programs/Python/Python38/DLLs/tcl86t.dll',
+            ('resources', 'resources')
         ],
     }
 }

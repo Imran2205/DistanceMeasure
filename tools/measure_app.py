@@ -19,6 +19,8 @@ from core.blast_detection.keras_yamnet.yamnet import YAMNet, class_names
 from core.blast_detection.keras_yamnet.preprocessing import preprocess_input
 from copy import deepcopy
 
+_init_paths
+
 
 def resource_path(relative_path):
     try:
