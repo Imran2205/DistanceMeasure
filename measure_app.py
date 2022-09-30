@@ -1,5 +1,4 @@
 import sys
-import _init_paths
 import os
 from PyQt6.QtWidgets import QMainWindow, QApplication, QMessageBox, QFileDialog, QWidget
 from PyQt6 import QtCore, QtWidgets
@@ -10,16 +9,9 @@ from utils.req_functions import distance_calculator
 from datetime import datetime
 import numpy as np
 import pyaudio
-from matplotlib import pyplot as plt
-import pandas as pd
-import sounddevice as sd
-
-from core.blast_detection.keras_yamnet import params
 from core.blast_detection.keras_yamnet.yamnet import YAMNet, class_names
 from core.blast_detection.keras_yamnet.preprocessing import preprocess_input
 from copy import deepcopy
-
-_init_paths
 
 
 def resource_path(relative_path):

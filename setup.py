@@ -22,19 +22,22 @@ base = None
 if sys.platform == 'win32':
     base = 'Win32GUI'
 
+additional_modules = []
 options = {
     'build_exe': {
-        'includes': ['cx_Freeze'],
+        'includes': additional_modules,
+        'packages': ['scipy', 'sys', 'pyaudio', 'librosa', 'sounddevice'],
         'include_files': [
             'C:/Users/admin/AppData/Local/Programs/Python/Python38/DLLs/tk86t.dll',
             'C:/Users/admin/AppData/Local/Programs/Python/Python38/DLLs/tcl86t.dll',
+            'C:/Users/admin/Desktop/desktop/gta/DistanceMeasure/resources/libsndfile.dll',
             ('resources', 'resources')
         ],
     }
 }
 # , icon="icon.ico"
 executables = [
-    Executable('./tools/measure_app.py', base=base, targetName="MeasureDistance.exe")
+    Executable('./measure_app.py', base=base, targetName="MeasureDistance.exe")
 ]
 
 setup(
@@ -42,6 +45,7 @@ setup(
     version='1.0',
     author='Imran Kabir',
     description='Distance Measurement software.',
+    icon='./ui/icon.ico',
     options=options,
     executables=executables
 )
