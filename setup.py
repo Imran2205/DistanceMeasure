@@ -14,6 +14,8 @@ setup(name="Avesta agro vet",
       description="Stock management",
       options={"build_exe": build_exe_options},
       executables=[Executable(script="Avesta_agro_vet_Func.py", base=base)])"""
+# inno setup compiler
+
 
 import sys
 from cx_Freeze import setup, Executable
