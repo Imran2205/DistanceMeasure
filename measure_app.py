@@ -272,7 +272,7 @@ class ExplosionDetectionThread(QtCore.QThread):
         self.format = pyaudio.paFloat32
         self.channels = 1
         self.rate = 16000
-        self.win_size_sec = 0.475
+        self.win_size_sec = 0.175
         self.chunk = int(self.win_size_sec * self.rate)
         self.mic = None
         self.model = YAMNet(weights=resource_path("resources/yamnet.h5"))
@@ -323,8 +323,8 @@ class ExplosionDetectionThread(QtCore.QThread):
             pad_data = data
             if curr_size < 96:
                 pad_data = deepcopy(self.silent_data)
-            for j in range(10, 20, curr_size):
-                pad_data[j:j + curr_size, 0:64] = data
+                for j in range(20, 22, curr_size):
+                    pad_data[j:j + curr_size, 0:64] = data
 
             prediction = self.model.predict(np.expand_dims(pad_data, 0), verbose=0)[0][self.classes]
             current_class = self.classes[np.argmax(prediction)]
@@ -333,7 +333,7 @@ class ExplosionDetectionThread(QtCore.QThread):
             prediction_string = "{}({}): {:.4f}".format(current_class_name, current_class, prediction_strength)
             self.audio_signal.emit(prediction_string)
             if 420 <= current_class <= 430:
-                if prediction_strength >= 0.1:
+                if prediction_strength >= 0.3:
                     self.explosion_signal.emit(True)
                     run_loop = False
 
