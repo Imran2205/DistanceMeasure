@@ -5,7 +5,7 @@
 #define MyAppVersion "1.0.0"
 #define MyAppPublisher "MeasureDistance"
 #define MyAppURL ""
-#define MyAppExeName "DistanceMeasure-Installer.exe"
+#define MyAppExeName "MeasureDistance.exe"
 
 [Setup]
 ; NOTE: The value of AppId uniquely identifies this application. Do not use the same AppId value in installers for other applications.
@@ -23,7 +23,7 @@ DisableProgramGroupPage=yes
 ; Uncomment the following line to run in non administrative install mode (install for current user only.)
 ;PrivilegesRequired=lowest
 OutputDir=C:\Users\admin\Desktop\desktop\gta\DistanceMeasure\build
-OutputBaseFilename=DistanceMeasure-Installer
+OutputBaseFilename=MeasureDistance-Installer
 SetupIconFile=C:\Users\admin\Desktop\desktop\gta\DistanceMeasure\ui\icon.ico
 Compression=lzma
 SolidCompression=yes
