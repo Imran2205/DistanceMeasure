@@ -17,6 +17,7 @@ def main():
     pixmap = QtGui.QPixmap(resource_path("resources/icon.png"))
     splash = QtWidgets.QSplashScreen(pixmap)
     splash.show()
+    # splash.showMessage("Loading...")
     from measure_app import MeasureApp
     app.processEvents()
     m_a = MeasureApp()
