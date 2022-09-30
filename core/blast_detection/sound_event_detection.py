@@ -1,5 +1,3 @@
-
-
 import numpy as np
 import pyaudio
 from matplotlib import pyplot as plt
@@ -14,7 +12,6 @@ from copy import deepcopy
 from plot import Plotter
 
 if __name__ == "__main__":
-
     ################### SETTINGS ###################
     # plt_classes = [0, 132, 420, 494] # Speech, Music, Explosion, Silence
     plt_classes = [

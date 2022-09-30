@@ -1,5 +1,6 @@
 import sys
-# import _init_paths
+import _init_paths
+import os
 from PyQt6.QtWidgets import QMainWindow, QApplication, QMessageBox, QFileDialog, QWidget
 from PyQt6 import QtCore, QtWidgets
 from PyQt6.QtCore import Qt
@@ -7,6 +8,24 @@ import time
 from python_ui.distance_measure_app_ui import Ui_MainWindow as MeasureAppUI
 from utils.req_functions import distance_calculator
 from datetime import datetime
+import numpy as np
+import pyaudio
+from matplotlib import pyplot as plt
+import pandas as pd
+import sounddevice as sd
+
+from core.blast_detection.keras_yamnet import params
+from core.blast_detection.keras_yamnet.yamnet import YAMNet, class_names
+from core.blast_detection.keras_yamnet.preprocessing import preprocess_input
+from copy import deepcopy
+
+
+def resource_path(relative_path):
+    try:
+        base_path = sys._MEIPASS
+    except Exception:
+        base_path = os.path.abspath(".")
+    return os.path.join(base_path, relative_path)
 
 
 class App(QWidget):
@@ -50,12 +69,19 @@ class MeasureApp(QMainWindow, MeasureAppUI):
         self.pushButton_export_data.clicked.connect(self.save_csv)
         self.actionClear_Data.triggered.connect(self.clear_data)
         self.timer_thread = None
+        self.explosion_detection_thread = ExplosionDetectionThread()
+        self.label_sound_prediction.setText("")
+        self.explosion_detection_thread.audio_signal.connect(self.set_sudio_info)
+        self.explosion_detection_thread.explosion_signal.connect(self.stop_timer)
         self.milliseconds2 = 0
         self.play = 0
         self.tot_time = 0
         self.row_count_order_table = 0
         self.data_dict = {}
         self.create_table()
+
+    def set_sudio_info(self, pred):
+        self.label_sound_prediction.setText(pred)
 
     def clear_data(self):
         self.timer_thread = None
@@ -187,11 +213,15 @@ class MeasureApp(QMainWindow, MeasureAppUI):
 
     def start_timer(self):
         if self.play == 0:
+            self.label_sound_prediction.setText("")
             date_time_str = datetime.now().strftime("%Y_%m_%d-%I:%M:%S_%p")
             self.lineEdit_name.setText(f"Event_{date_time_str}")
             self.timer_thread = TimerThreadClass()
             self.timer_thread.timer_signal.connect(self.run_time)
+            self.explosion_detection_thread.reset()
+            self.explosion_detection_thread.start_audio()
             self.milliseconds2 = int(round(time.time() * 1000))
+            self.explosion_detection_thread.start()
             self.timer_thread.start()
             self.play = 1
             self.pushButton_start.setEnabled(False)
@@ -215,6 +245,8 @@ class MeasureApp(QMainWindow, MeasureAppUI):
             self.doubleSpinBox_temp.setEnabled(True)
             self.spinBox_humidity.setEnabled(True)
             self.spinBox_pressure.setEnabled(True)
+            self.explosion_detection_thread.stop()
+            self.explosion_detection_thread.stop_audio()
 
     def run_time(self, t):
         if self.play == 1:
@@ -240,6 +272,83 @@ def main():
     m_a = MeasureApp()
     m_a.show()
     sys.exit(app.exec())
+
+
+class ExplosionDetectionThread(QtCore.QThread):
+    explosion_signal = QtCore.pyqtSignal('PyQt_PyObject')
+    audio_signal = QtCore.pyqtSignal('PyQt_PyObject')
+
+    def __init__(self, parent=None):
+        super(ExplosionDetectionThread, self).__init__(parent)
+        self.thread_active = True
+        self.class_labels = True
+        self.format = pyaudio.paFloat32
+        self.channels = 1
+        self.rate = 16000
+        self.win_size_sec = 0.475
+        self.chunk = int(self.win_size_sec * self.rate)
+        self.mic = None
+        self.model = YAMNet(weights=resource_path("resources/yamnet.h5"))
+        self.yamnet_classes = class_names("resources/yamnet_class_map.csv")
+        # self.classes = [k for k in range(len(self.yamnet_classes))]
+        self.classes = [
+            494, 0, 132, 420, 421, 422, 423, 424, 425, 426, 427, 428, 429, 430
+        ]
+        self.silent_data = np.load("resources/room_silence.npy")
+        self.audio = None
+        self.stream = None
+        # self.classes_lab = self.yamnet_classes[self.classes]
+
+    def stop(self):
+        self.thread_active = False
+        # self.wait()
+
+    def reset(self):
+        self.thread_active = True
+
+    def start_audio(self):
+        self.audio = pyaudio.PyAudio()
+        self.stream = self.audio.open(
+            format=self.format,
+            input_device_index=self.mic,
+            channels=self.channels,
+            rate=self.rate,
+            input=True,
+            frames_per_buffer=self.chunk
+        )
+
+    def stop_audio(self):
+        self.stream.stop_stream()
+        self.stream.close()
+        self.audio.terminate()
+
+    def run(self):
+        current_class = 0
+        run_loop = True
+        while run_loop:
+            if not self.thread_active:
+                break
+            if not self.stream:
+                break
+            data = preprocess_input(np.fromstring(
+                self.stream.read(self.chunk), dtype=np.float32), self.rate)
+            curr_size = data.shape[0]
+            pad_data = data
+            if curr_size < 96:
+                pad_data = deepcopy(self.silent_data)
+            for j in range(10, 20, curr_size):
+                pad_data[j:j + curr_size, 0:64] = data
+
+            prediction = self.model.predict(np.expand_dims(pad_data, 0), verbose=0)[0][self.classes]
+            current_class = self.classes[np.argmax(prediction)]
+            current_class_name = self.yamnet_classes[current_class]
+            prediction_strength = np.max(prediction)
+            prediction_string = "{}({}): {:.4f}".format(current_class_name, current_class, prediction_strength)
+            self.audio_signal.emit(prediction_string)
+            if 420 <= current_class <= 430:
+                if prediction_strength >= 0.1:
+                    self.explosion_signal.emit(True)
+                    run_loop = False
 
 
 if __name__ == '__main__':
