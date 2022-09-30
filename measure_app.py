@@ -1,7 +1,7 @@
 import sys
 import os
 from PyQt6.QtWidgets import QMainWindow, QApplication, QMessageBox, QFileDialog, QWidget
-from PyQt6 import QtCore, QtWidgets
+from PyQt6 import QtCore, QtWidgets, QtGui
 from PyQt6.QtCore import Qt
 import time
 from python_ui.distance_measure_app_ui import Ui_MainWindow as MeasureAppUI
@@ -261,13 +261,6 @@ class TimerThreadClass(QtCore.QThread):
             time.sleep(0.0005)
 
 
-def main():
-    app = QApplication(sys.argv)
-    m_a = MeasureApp()
-    m_a.show()
-    sys.exit(app.exec())
-
-
 class ExplosionDetectionThread(QtCore.QThread):
     explosion_signal = QtCore.pyqtSignal('PyQt_PyObject')
     audio_signal = QtCore.pyqtSignal('PyQt_PyObject')
@@ -343,6 +336,18 @@ class ExplosionDetectionThread(QtCore.QThread):
                 if prediction_strength >= 0.1:
                     self.explosion_signal.emit(True)
                     run_loop = False
+
+
+def main():
+    app = QApplication(sys.argv)
+    pixmap = QtGui.QPixmap(resource_path("resources/icon.png"))
+    splash = QtWidgets.QSplashScreen(pixmap)
+    splash.show()
+    app.processEvents()
+    m_a = MeasureApp()
+    m_a.show()
+    splash.finish(m_a)
+    sys.exit(app.exec())
 
 
 if __name__ == '__main__':
