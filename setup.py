@@ -37,7 +37,7 @@ options = {
 }
 # , icon="icon.ico"
 executables = [
-    Executable('./measure_app.py', base=base, targetName="MeasureDistance.exe")
+    Executable('./measure_app.py', base=base, icon='./ui/icon.ico', targetName="MeasureDistance.exe")
 ]
 
 setup(
@@ -45,7 +45,6 @@ setup(
     version='1.0',
     author='Imran Kabir',
     description='Distance Measurement software.',
-    icon='./ui/icon.ico',
     options=options,
     executables=executables
 )
