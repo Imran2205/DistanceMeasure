@@ -7,12 +7,25 @@
 
 
 from PyQt6 import QtCore, QtGui, QtWidgets
+import sys
+import os
+
+
+def resource_path(relative_path):
+    try:
+        base_path = sys._MEIPASS
+    except Exception:
+        base_path = os.path.abspath(".")
+    return os.path.join(base_path, relative_path)
 
 
 class Ui_MainWindow(object):
     def setupUi(self, MainWindow):
         MainWindow.setObjectName("MainWindow")
         MainWindow.resize(850, 600)
+        icon = QtGui.QIcon()
+        icon.addPixmap(QtGui.QPixmap(resource_path("resources/icon.ico")), QtGui.QIcon.Mode.Normal, QtGui.QIcon.State.Off)
+        MainWindow.setWindowIcon(icon)
         self.centralwidget = QtWidgets.QWidget(MainWindow)
         self.centralwidget.setObjectName("centralwidget")
         self.gridLayout = QtWidgets.QGridLayout(self.centralwidget)
@@ -160,7 +173,7 @@ class Ui_MainWindow(object):
 
     def retranslateUi(self, MainWindow):
         _translate = QtCore.QCoreApplication.translate
-        MainWindow.setWindowTitle(_translate("MainWindow", "MainWindow"))
+        MainWindow.setWindowTitle(_translate("MainWindow", "MeasureDistance"))
         self.pushButton_start.setText(_translate("MainWindow", "Start"))
         self.label_3.setText(_translate("MainWindow", "Distance"))
         self.label_5.setText(_translate("MainWindow", "Name"))
