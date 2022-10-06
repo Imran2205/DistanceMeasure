@@ -12,6 +12,8 @@ import pyaudio
 from core.blast_detection.keras_yamnet.yamnet import YAMNet, class_names
 from core.blast_detection.keras_yamnet.preprocessing import preprocess_input
 from copy import deepcopy
+import serial
+import serial.tools.list_ports
 
 
 def resource_path(relative_path):
@@ -58,6 +60,8 @@ class MeasureApp(QMainWindow, MeasureAppUI):
         self.pushButton_measure.clicked.connect(self.measure_dist)
         self.pushButton_stop.setEnabled(False)
         self.pushButton_save.clicked.connect(self.add_row_to_table)
+        self.toolButton_refresh.clicked.connect(self.get_serial_ports)
+        self.plainTextEdit_serial_log.setReadOnly(True)
         self.app_save_file = App()
         self.app_save_file.signal.connect(self.export_csv_file)
         self.pushButton_export_data.clicked.connect(self.save_csv)
@@ -67,12 +71,42 @@ class MeasureApp(QMainWindow, MeasureAppUI):
         self.label_sound_prediction.setText("")
         self.explosion_detection_thread.audio_signal.connect(self.set_sudio_info)
         self.explosion_detection_thread.explosion_signal.connect(self.stop_timer)
+        self.selected_port = None
+        self.ser = None
+        self.ser_thread = None
         self.milliseconds2 = 0
         self.play = 0
         self.tot_time = 0
         self.row_count_order_table = 0
         self.data_dict = {}
         self.create_table()
+        self.get_serial_ports()
+        self.comboBox_serial_ports.currentIndexChanged.connect(self.set_current_port)
+        self.pushButton_serial_connect.clicked.connect(self.connect_serial)
+
+    def connect_serial(self):
+        if self.ser_thread:
+            self.ser_thread.terminate()
+            self.ser_thread = None
+
+        self.ser = serial.Serial(self.selected_port, 9600, timeout=5)
+        self.label_connection_status.setText(f'Connected Port: {self.selected_port}')
+        self.ser_thread = SerialThreadClass(com_port=self.ser)
+        self.ser_thread.com_signal.connect(self.set_weather_data)
+
+    def set_weather_data(self, ser_line):
+        self.plainTextEdit_serial_log.setPlainText(ser_line)
+
+    def set_current_port(self):
+        c_txt = self.comboBox_serial_ports.currentText()
+        self.selected_port = c_txt.split(':')[0]
+
+    def get_serial_ports(self):
+        self.comboBox_serial_ports.clear()
+        ports = serial.tools.list_ports.comports()
+
+        for port, desc, hwid in sorted(ports):
+            self.comboBox_serial_ports.addItem("{}: {} [{}]".format(port, desc, hwid))
 
     def set_sudio_info(self, pred):
         self.label_sound_prediction.setText(pred)
@@ -336,6 +370,19 @@ class ExplosionDetectionThread(QtCore.QThread):
                 if prediction_strength >= 0.3:
                     self.explosion_signal.emit(True)
                     run_loop = False
+
+
+class SerialThreadClass(QtCore.QThread):
+    com_signal = QtCore.pyqtSignal('PyQt_PyObject')
+
+    def __init__(self, parent=None, com_port=None):
+        super(SerialThreadClass, self).__init__(parent)
+        self.com_port = com_port
+
+    def run(self):
+        while True:
+            ser_line = str(self.com_port.readline())
+            self.com_signal.emit(ser_line)
 
 
 def main():
