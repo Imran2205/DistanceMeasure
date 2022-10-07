@@ -93,6 +93,7 @@ class MeasureApp(QMainWindow, MeasureAppUI):
         self.label_connection_status.setText(f'Connected Port: {self.selected_port}')
         self.ser_thread = SerialThreadClass(com_port=self.ser)
         self.ser_thread.com_signal.connect(self.set_weather_data)
+        self.ser_thread.start()
 
     def set_weather_data(self, ser_line):
         self.plainTextEdit_serial_log.setPlainText(ser_line)
@@ -383,6 +384,7 @@ class SerialThreadClass(QtCore.QThread):
         while True:
             ser_line = str(self.com_port.readline())
             self.com_signal.emit(ser_line)
+            time.sleep(0.5)
 
 
 def main():
