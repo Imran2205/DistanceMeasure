@@ -30,9 +30,9 @@ options = {
         'includes': additional_modules,
         'packages': ['scipy', 'sys', 'pyaudio', 'librosa', 'sounddevice'],
         'include_files': [
-            'C:/Users/admin/AppData/Local/Programs/Python/Python38/DLLs/tk86t.dll',
-            'C:/Users/admin/AppData/Local/Programs/Python/Python38/DLLs/tcl86t.dll',
-            'C:/Users/admin/Desktop/desktop/gta/DistanceMeasure/resources/libsndfile.dll',
+            'C:/Users/labib/AppData/Local/Programs/Python/Python38/DLLs/tk86t.dll',
+            'C:/Users/labib/AppData/Local/Programs/Python/Python38/DLLs/tcl86t.dll',
+            'C:/Users/labib/OneDrive/Desktop/imran_do_not_delete/DistanceMeasure/resources/libsndfile.dll',
             ('resources', 'resources')
         ],
     }

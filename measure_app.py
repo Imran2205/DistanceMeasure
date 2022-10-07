@@ -90,13 +90,20 @@ class MeasureApp(QMainWindow, MeasureAppUI):
             self.ser_thread = None
 
         self.ser = serial.Serial(self.selected_port, 9600, timeout=5)
-        self.label_connection_status.setText(f'Connected Port: {self.selected_port}')
         self.ser_thread = SerialThreadClass(com_port=self.ser)
         self.ser_thread.com_signal.connect(self.set_weather_data)
         self.ser_thread.start()
+        self.label_connection_status.setText(f'Connected Port: {self.selected_port}')
 
     def set_weather_data(self, ser_line):
+        ser_line = ser_line.replace('\\n', '').replace('b', '').replace("'", "").replace('\\r', '')
         self.plainTextEdit_serial_log.setPlainText(ser_line)
+        if "Temperature" in ser_line and "Humidity" in ser_line:
+            ser_data = ser_line.split(",")
+            temp_data = float(ser_data[0].split(":")[1].strip())
+            hum_data = float(ser_data[1].split(":")[1].strip())
+            self.doubleSpinBox_temp.setValue(temp_data)
+            self.doubleSpinBox_humidity.setValue(hum_data)
 
     def set_current_port(self):
         c_txt = self.comboBox_serial_ports.currentText()
@@ -161,7 +168,7 @@ class MeasureApp(QMainWindow, MeasureAppUI):
             name = self.lineEdit_name.text()
             time_ms = self.lcdNumber_time.value()
             temp = self.doubleSpinBox_temp.value()
-            rel_h = self.spinBox_humidity.value()
+            rel_h = self.doubleSpinBox_humidity.value()
             pres = self.spinBox_pressure.value()
             dist = self.lcdNumber_distance.value()
             if name and time_ms and temp and rel_h and pres and dist:
@@ -216,7 +223,7 @@ class MeasureApp(QMainWindow, MeasureAppUI):
     def measure_dist(self):
         if self.play == 0:
             req_time = self.lcdNumber_time.value()
-            rh = self.spinBox_humidity.value()
+            rh = self.doubleSpinBox_humidity.value()
             temp = self.doubleSpinBox_temp.value()
             pressure = self.spinBox_pressure.value()
             distance, _ = distance_calculator(
@@ -259,7 +266,7 @@ class MeasureApp(QMainWindow, MeasureAppUI):
             self.lineEdit_name.setEnabled(False)
             self.tableWidget.setEnabled(False)
             self.doubleSpinBox_temp.setEnabled(False)
-            self.spinBox_humidity.setEnabled(False)
+            self.doubleSpinBox_humidity.setEnabled(False)
             self.spinBox_pressure.setEnabled(False)
 
     def stop_timer(self):
@@ -272,7 +279,7 @@ class MeasureApp(QMainWindow, MeasureAppUI):
             self.lineEdit_name.setEnabled(True)
             self.tableWidget.setEnabled(True)
             self.doubleSpinBox_temp.setEnabled(True)
-            self.spinBox_humidity.setEnabled(True)
+            self.doubleSpinBox_humidity.setEnabled(True)
             self.spinBox_pressure.setEnabled(True)
             self.explosion_detection_thread.stop()
             self.explosion_detection_thread.stop_audio()

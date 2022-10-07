@@ -29,6 +29,6 @@ def distance_calculator(pressure_pascal, temp_cel, rh_perc, t_ms):
 
 
 if __name__ == '__main__':
-    dist_, v_s = distance_calculator(101325, 29, 86, 2650)
+    dist_, v_s = distance_calculator(101325, 32, 81.22, 6118)
     print(dist_, v_s)
 
