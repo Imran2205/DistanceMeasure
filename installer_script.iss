@@ -22,9 +22,9 @@ DefaultDirName={autopf}\{#MyAppName}
 DisableProgramGroupPage=yes
 ; Uncomment the following line to run in non administrative install mode (install for current user only.)
 ;PrivilegesRequired=lowest
-OutputDir=C:\Users\labib\OneDrive\Desktop\imran_do_not_delete\DistanceMeasure\build
+OutputDir=C:\Users\labib\OneDrive\Desktop\imran\DistanceMeasure\build
 OutputBaseFilename=MeasureDistance-Installer
-SetupIconFile=C:\Users\labib\OneDrive\Desktop\imran_do_not_delete\DistanceMeasure\ui\icon.ico
+SetupIconFile=C:\Users\labib\OneDrive\Desktop\imran\DistanceMeasure\ui\icon.ico
 Compression=lzma
 SolidCompression=yes
 WizardStyle=modern
@@ -36,8 +36,8 @@ Name: "english"; MessagesFile: "compiler:Default.isl"
 Name: "desktopicon"; Description: "{cm:CreateDesktopIcon}"; GroupDescription: "{cm:AdditionalIcons}"; Flags: unchecked
 
 [Files]
-Source: "C:\Users\labib\OneDrive\Desktop\imran_do_not_delete\DistanceMeasure\build\MeasureDistance\MeasureDistance.exe"; DestDir: "{app}"; Flags: ignoreversion
-Source: "C:\Users\labib\OneDrive\Desktop\imran_do_not_delete\DistanceMeasure\build\MeasureDistance\*"; DestDir: "{app}"; Flags: ignoreversion recursesubdirs createallsubdirs
+Source: "C:\Users\labib\OneDrive\Desktop\imran\DistanceMeasure\build\MeasureDistance\MeasureDistance.exe"; DestDir: "{app}"; Flags: ignoreversion
+Source: "C:\Users\labib\OneDrive\Desktop\imran\DistanceMeasure\build\MeasureDistance\*"; DestDir: "{app}"; Flags: ignoreversion recursesubdirs createallsubdirs
 ; NOTE: Don't use "Flags: ignoreversion" on any shared system files
 
 [Icons]

@@ -32,7 +32,7 @@ options = {
         'include_files': [
             'C:/Users/labib/AppData/Local/Programs/Python/Python38/DLLs/tk86t.dll',
             'C:/Users/labib/AppData/Local/Programs/Python/Python38/DLLs/tcl86t.dll',
-            'C:/Users/labib/OneDrive/Desktop/imran_do_not_delete/DistanceMeasure/resources/libsndfile.dll',
+            'C:/Users/labib/OneDrive/Desktop/imran/DistanceMeasure/resources/libsndfile.dll',
             ('resources', 'resources')
         ],
     }
