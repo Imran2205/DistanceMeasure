@@ -28,7 +28,7 @@ additional_modules = []
 options = {
     'build_exe': {
         'includes': additional_modules,
-        'packages': ['scipy', 'sys', 'pyaudio', 'librosa', 'sounddevice'],
+        'packages': ['scipy', 'sys', 'pyaudio', 'librosa', 'sounddevice', 'tensorflow'],
         'include_files': [
             'C:/Users/labib/AppData/Local/Programs/Python/Python38/DLLs/tk86t.dll',
             'C:/Users/labib/AppData/Local/Programs/Python/Python38/DLLs/tcl86t.dll',

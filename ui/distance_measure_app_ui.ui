@@ -13,10 +13,6 @@
   <property name="windowTitle">
    <string>MeasureDistance</string>
   </property>
-  <property name="windowIcon">
-   <iconset>
-    <normaloff>icon.ico</normaloff>icon.ico</iconset>
-  </property>
   <widget class="QWidget" name="centralwidget">
    <layout class="QGridLayout" name="gridLayout">
     <item row="1" column="0">

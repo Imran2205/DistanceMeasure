@@ -55,6 +55,13 @@ class MeasureApp(QMainWindow, MeasureAppUI):
         self.setupUi(self)
         self.setFocusPolicy(Qt.FocusPolicy.StrongFocus)
         self.setFixedSize(850, 600)
+        icon = QtGui.QIcon()
+        icon.addPixmap(
+            QtGui.QPixmap(resource_path("resources/icon.ico")),
+            QtGui.QIcon.Mode.Normal,
+            QtGui.QIcon.State.Off
+        )
+        self.setWindowIcon(icon)
         self.pushButton_start.clicked.connect(self.start_timer)
         self.pushButton_stop.clicked.connect(self.stop_timer)
         self.pushButton_measure.clicked.connect(self.measure_dist)
