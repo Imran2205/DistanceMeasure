@@ -122,6 +122,7 @@ class MeasureApp(QMainWindow, MeasureAppUI):
 
         for port, desc, hwid in sorted(ports):
             self.comboBox_serial_ports.addItem("{}: {} [{}]".format(port, desc, hwid))
+            self.selected_port = port
 
     def set_sudio_info(self, pred):
         self.label_sound_prediction.setText(pred)
