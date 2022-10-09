@@ -39,7 +39,7 @@ options = {
 }
 # , icon="icon.ico"
 executables = [
-    Executable('./main.py', base=base, icon='./ui/icon.ico', targetName="MeasureDistance.exe")
+    Executable('./main.py', base=base, icon='./ui/icon.ico', target_name="MeasureDistance.exe")
 ]
 
 setup(
